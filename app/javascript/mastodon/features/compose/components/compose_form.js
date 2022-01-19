@@ -21,6 +21,7 @@ import { length } from 'stringz';
 import { countableText } from '../util/counter';
 import Icon from 'mastodon/components/icon';
 import { maxChars } from '../../../initial_state';
+import Dropdown from "../../../components/dropdown_menu";
 
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
@@ -205,6 +206,24 @@ class ComposeForm extends ImmutablePureComponent {
       publishText = this.props.privacy !== 'unlisted' ? intl.formatMessage(messages.publishLoud, { publish: intl.formatMessage(messages.publish) }) : intl.formatMessage(messages.publish);
     }
 
+    const contentTypeItems = {
+      plain: {
+        icon: 'file-text',
+        name: 'text/plain',
+        text: <FormattedMessage {...messages.plain} />,
+      },
+      html: {
+        icon: 'code',
+        name: 'text/html',
+        text: <FormattedMessage {...messages.html} />,
+      },
+      markdown: {
+        icon: 'arrow-circle-down',
+        name: 'text/markdown',
+        text: <FormattedMessage {...messages.markdown} />,
+      },
+    };
+
     return (
       <div className='compose-form'>
         <WarningContainer />
@@ -255,6 +274,25 @@ class ComposeForm extends ImmutablePureComponent {
           <div className='compose-form__buttons'>
             <UploadButtonContainer />
             <PollButtonContainer />
+
+            <div className='composer--options'>
+              <Dropdown
+                disabled={disabled}
+                icon={(contentTypeItems[contentType.split('/')[1]] || {}).icon}
+                items={[
+                  contentTypeItems.plain,
+                  contentTypeItems.html,
+                  contentTypeItems.markdown,
+                ]}
+                onChange={onChangeContentType}
+                onModalClose={onModalClose}
+                onModalOpen={onModalOpen}
+                title={intl.formatMessage(messages.content_type)}
+                value={contentType}
+              />
+
+            </div>
+
             <PrivacyDropdownContainer />
             <SpoilerButtonContainer />
             <FederationDropdownContainer />
